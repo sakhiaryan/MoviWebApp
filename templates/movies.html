@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Movies • {{ user.name }} • MoviWeb{% endblock %}
+{% block content %}
+  <h2>{{ user.name }}’s Favorite Movies</h2>
+
+  {% if movies %}
+    <ul class="cards">
+      {% for m in movies %}
+        <li class="card">
+          <div class="card-body">
+            <div class="card-media">
+              {% if m.poster_url %}
+                <img src="{{ m.poster_url }}" alt="{{ m.title }}">
+              {% else %}
+                <div class="placeholder">No Poster</div>
+              {% endif %}
+            </div>
+            <div class="card-content">
+              <h3 class="movie-title">{{ m.title }}</h3>
+              {% if m.year %}<p class="muted">Year: {{ m.year }}</p>{% endif %}
+
+              <div class="row gap">
+                <!-- Update form -->
+                <form action="{{ url_for('update_movie', user_id=user.id, movie_id=m.id) }}" method="post" class="row">
+                  <input type="text" name="title" placeholder="New title (optional)">
+                  <input type="text" name="year" placeholder="Year (optional)">
+                  <input type="url"  name="poster_url" placeholder="Poster URL (optional)">
+                  <button type="submit">Update</button>
+                </form>
+
+                <!-- Delete form -->
+                <form action="{{ url_for('delete_movie', user_id=user.id, movie_id=m.id) }}" method="post"
+                      onsubmit="return confirm('Delete {{ m.title }}?');">
+                  <button type="submit" class="danger">Delete</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No movies yet for {{ user.name }}.</p>
+  {% endif %}
+
+  <hr>
+
+  <h3>Add a movie</h3>
+  <form action="{{ url_for('add_movie', user_id=user.id) }}" method="post" class="row">
+    <input type="text" name="title" placeholder="Movie title" required>
+    <input type="text" name="year" placeholder="Year (optional)">
+    <input type="url"  name="poster_url" placeholder="Poster URL (optional)">
+    <button type="submit">Add</button>
+  </form>
+{% endblock %}

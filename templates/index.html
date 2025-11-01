@@ -1,12 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>MoviWeb 🎬</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <h1>Welcome to MoviWeb 🎬</h1>
-    <p>Select a user or create a new one to start managing your favorite movies.</p>
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Users • MoviWeb{% endblock %}
+{% block content %}
+  <h2>Users</h2>
+
+  {% if users %}
+    <ul class="list">
+      {% for user in users %}
+        <li>
+          <a href="{{ url_for('list_movies', user_id=user.id) }}">{{ user.name }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No users yet.</p>
+  {% endif %}
+
+  <hr>
+
+  <h3>Add a new user</h3>
+  <form action="{{ url_for('create_user') }}" method="post" class="row">
+    <input type="text" name="name" placeholder="User name" required>
+    <button type="submit">Add</button>
+  </form>
+{% endblock %}
