@@ -1,33 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>{% block title %}MoviWeb{% endblock %}</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8" />
+  <title>MoviWebApp</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    /* Minimal defaults if style.css empty */
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; background: #0b1320; color: #e7eefc; }
+    header { background:#111b2e; padding: 14px 20px; border-bottom: 1px solid #1e2a44;}
+    a { color:#8bc8ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .container { max-width: 960px; margin: 0 auto; padding: 24px; }
+    .card { background:#111b2e; border:1px solid #1e2a44; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+    .btn { background:#1a73e8; color:#fff; border:none; padding:8px 14px; border-radius:8px; cursor:pointer; }
+    .btn.secondary { background:#2b364f; }
+    .btn.danger { background:#d9534f; }
+    input, select { background:#0b1320; color:#e7eefc; border:1px solid #1e2a44; border-radius:8px; padding:8px 10px; }
+    label { font-size: 14px; color:#a8b2d1;}
+    .row { display:flex; gap:12px; flex-wrap: wrap; }
+    .col { flex:1 1 280px; }
+    .flash { padding:10px 12px; border-radius:8px; margin:8px 0; }
+    .flash.error { background:#3a0d0d; border:1px solid #8a1f1f; }
+    .flash.success { background:#0f3a1b; border:1px solid #1f8a52; }
+    table { width:100%; border-collapse: collapse; }
+    th, td { border-bottom: 1px solid #1e2a44; padding: 10px; text-align: left; vertical-align: top; }
+    img.poster { width: 64px; height: auto; border-radius:6px; border:1px solid #1e2a44; }
+    nav a { margin-right: 12px; }
+  </style>
 </head>
 <body>
-  <header class="site-header">
-    <div class="container">
-      <h1 class="brand"><a href="{{ url_for('index') }}">MoviWeb</a></h1>
-      <nav>
-        <a href="{{ url_for('index') }}">Users</a>
-      </nav>
-    </div>
-  </header>
+<header>
+  <nav class="container">
+    <a href="{{ url_for('index') }}">Home</a>
+  </nav>
+</header>
 
-  <main class="container">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <ul class="flash-list">
-          {% for category, message in messages %}
-            <li class="flash {{ category }}">{{ message }}</li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
+<main class="container">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, msg in messages %}
+        <div class="flash {{ category }}">{{ msg }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
 
-    {% block content %}{% endblock %}
-  </main>
+  {% block content %}{% endblock %}
+</main>
 </body>
 </html>

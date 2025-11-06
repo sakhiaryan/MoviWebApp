@@ -1,25 +1,31 @@
 {% extends "base.html" %}
-{% block title %}Users • MoviWeb{% endblock %}
 {% block content %}
-  <h2>Users</h2>
+  <h1>Users</h1>
 
-  {% if users %}
-    <ul class="list">
-      {% for user in users %}
-        <li>
-          <a href="{{ url_for('list_movies', user_id=user.id) }}">{{ user.name }}</a>
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>No users yet.</p>
-  {% endif %}
+  <div class="card">
+    {% if users %}
+      <ul>
+        {% for user in users %}
+          <li>
+            <a href="{{ url_for('list_movies', user_id=user.id) }}">{{ user.name }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No users yet. Create one below.</p>
+    {% endif %}
+  </div>
 
-  <hr>
-
-  <h3>Add a new user</h3>
-  <form action="{{ url_for('create_user') }}" method="post" class="row">
-    <input type="text" name="name" placeholder="User name" required>
-    <button type="submit">Add</button>
-  </form>
+  <div class="card">
+    <h2>Add User</h2>
+    <form action="{{ url_for('create_user') }}" method="post" class="row">
+      <div class="col">
+        <label for="name">Name</label><br>
+        <input id="name" name="name" placeholder="e.g. Aryan" required>
+      </div>
+      <div class="col" style="align-self:end;">
+        <button class="btn" type="submit">Create</button>
+      </div>
+    </form>
+  </div>
 {% endblock %}
