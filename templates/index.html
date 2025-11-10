@@ -1,31 +1,29 @@
 {% extends "base.html" %}
 {% block content %}
-  <h1>Users</h1>
+<section>
+  <h2>Users</h2>
 
-  <div class="card">
-    {% if users %}
-      <ul>
-        {% for user in users %}
-          <li>
-            <a href="{{ url_for('list_movies', user_id=user.id) }}">{{ user.name }}</a>
-          </li>
-        {% endfor %}
-      </ul>
-    {% else %}
-      <p>No users yet. Create one below.</p>
-    {% endif %}
-  </div>
+  {% if users %}
+    <ul class="list">
+      {% for u in users %}
+        <li>
+          <a href="{{ url_for('list_movies', user_id=u.id) }}">{{ u.name }}</a>
+          <small class="muted">created {{ (u.created_at or "") }}</small>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="muted">No users yet.</p>
+  {% endif %}
+</section>
 
-  <div class="card">
-    <h2>Add User</h2>
-    <form action="{{ url_for('create_user') }}" method="post" class="row">
-      <div class="col">
-        <label for="name">Name</label><br>
-        <input id="name" name="name" placeholder="e.g. Aryan" required>
-      </div>
-      <div class="col" style="align-self:end;">
-        <button class="btn" type="submit">Create</button>
-      </div>
-    </form>
-  </div>
+<hr />
+
+<section>
+  <h3>Add User</h3>
+  <form method="post" action="{{ url_for('create_user') }}" class="form-inline">
+    <input type="text" name="name" placeholder="User name" required />
+    <button type="submit">Add</button>
+  </form>
+</section>
 {% endblock %}

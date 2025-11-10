@@ -1,21 +1,15 @@
-"""SQLAlchemy models for MoviWebApp."""
-
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import UniqueConstraint
+# models.py
+from __future__ import annotations
 from datetime import datetime
+from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
 
 class User(db.Model):
-    """User of the MoviWeb application.
-
-    Attributes:
-        id: Primary key.
-        name: Unique display name (case-insensitive uniqueness enforced in app logic).
-        created_at: Creation timestamp (UTC).
     """
-
+    User model representing an account that owns a list of favorite movies.
+    """
     __tablename__ = "user"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -24,38 +18,31 @@ class User(db.Model):
 
     movies = db.relationship(
         "Movie",
-        back_populates="user",
+        backref="user",
         cascade="all, delete-orphan",
         passive_deletes=True,
-        order_by="Movie.title.asc()",
     )
 
     def __repr__(self) -> str:
-        return f"<User id={self.id} name={self.name!r}>"
+        return f"<User id={self.id} name='{self.name}'>"
 
     def __str__(self) -> str:
         return self.name
 
 
 class Movie(db.Model):
-    """Movie favorited by a User.
-
-    Attributes:
-        id: Primary key.
-        title: Movie title (not empty).
-        year: Optional release year (string to allow ranges/unknown like 'N/A').
-        poster_url: Optional poster URL.
-        rating: Optional integer rating 1..10.
-        user_id: Foreign key to user.
     """
-
+    Movie model representing one favorite movie that belongs to a user.
+    """
     __tablename__ = "movie"
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), nullable=False)
-    year = db.Column(db.String(16), nullable=True)
+    year = db.Column(db.String(10), nullable=True)
+    imdb_id = db.Column(db.String(32), nullable=True)
     poster_url = db.Column(db.String(512), nullable=True)
-    rating = db.Column(db.Integer, nullable=True)
+    rating = db.Column(db.Integer, nullable=True)  # 1..10 (user-given)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     user_id = db.Column(
         db.Integer,
@@ -63,15 +50,9 @@ class Movie(db.Model):
         nullable=False,
         index=True,
     )
-    user = db.relationship("User", back_populates="movies")
-
-    # Optional DB-level uniqueness: no duplicate titles per user
-    __table_args__ = (
-        UniqueConstraint("user_id", "title", name="uq_movie_user_title"),
-    )
 
     def __repr__(self) -> str:
-        return f"<Movie id={self.id} title={self.title!r} user_id={self.user_id} rating={self.rating}>"
+        return f"<Movie id={self.id} title='{self.title}' user_id={self.user_id}>"
 
     def __str__(self) -> str:
-        return self.title
+        return f"{self.title} ({self.year or 'n/a'})"

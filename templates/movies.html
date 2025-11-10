@@ -1,92 +1,49 @@
 {% extends "base.html" %}
 {% block content %}
-  <h1>Movies · {{ user.name }}</h1>
+<section>
+  <h2>Movies of {{ user.name }}</h2>
 
-  <div class="card">
-    {% if movies %}
-      <table>
-        <thead>
-          <tr>
-            <th>Poster</th>
-            <th>Title</th>
-            <th>Year</th>
-            <th>Rating (1–10)</th>
-            <th style="width: 280px;">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-        {% for m in movies %}
-          <tr>
-            <td>
-              {% if m.poster_url %}
-                <img class="poster" src="{{ m.poster_url }}" alt="Poster of {{ m.title }}">
-              {% else %}
-                <span style="opacity:.7;">—</span>
-              {% endif %}
-            </td>
-            <td>{{ m.title }}</td>
-            <td>{{ m.year or "—" }}</td>
-            <td>{{ m.rating or "—" }}</td>
-            <td>
-              <!-- Update inline form -->
-              <form action="{{ url_for('update_movie', user_id=user.id, movie_id=m.id) }}" method="post" class="row">
-                <div class="col">
-                  <label for="title-{{ m.id }}">Title</label><br>
-                  <input id="title-{{ m.id }}" name="title" value="{{ m.title }}">
-                </div>
-                <div class="col">
-                  <label for="year-{{ m.id }}">Year</label><br>
-                  <input id="year-{{ m.id }}" name="year" value="{{ m.year or '' }}">
-                </div>
-                <div class="col">
-                  <label for="rating-{{ m.id }}">Rating</label><br>
-                  <input id="rating-{{ m.id }}" name="rating" type="number" min="1" max="10" value="{{ m.rating or '' }}">
-                </div>
-                <div class="col">
-                  <label for="poster-{{ m.id }}">Poster URL</label><br>
-                  <input id="poster-{{ m.id }}" name="poster_url" value="{{ m.poster_url or '' }}">
-                </div>
-                <div class="col" style="align-self:end;">
-                  <button class="btn secondary" type="submit">Update</button>
-                </div>
-              </form>
+  {% if movies %}
+    <div class="cards">
+      {% for m in movies %}
+        <div class="card">
+          {% if m.poster_url %}
+            <img class="poster" src="{{ m.poster_url }}" alt="poster for {{ m.title }}">
+          {% endif %}
+          <div class="card-body">
+            <h3>{{ m.title }} {% if m.year %}({{ m.year }}){% endif %}</h3>
+            <p>
+              <strong>Rating:</strong>
+              {% if m.rating %}{{ m.rating }}/10{% else %}<span class="muted">n/a</span>{% endif %}
+            </p>
 
-              <!-- Delete -->
-              <form action="{{ url_for('delete_movie', user_id=user.id, movie_id=m.id) }}" method="post" style="margin-top:8px;">
-                <button class="btn danger" type="submit" onclick="return confirm('Delete this movie?');">Delete</button>
-              </form>
-            </td>
-          </tr>
-        {% endfor %}
-        </tbody>
-      </table>
-    {% else %}
-      <p>No movies yet for {{ user.name }}.</p>
-    {% endif %}
-  </div>
+            <form method="post" action="{{ url_for('update_movie', user_id=user.id, movie_id=m.id) }}" class="form-inline">
+              <input type="text" name="title" placeholder="New title (optional)" />
+              <input type="number" name="rating" min="1" max="10" placeholder="New rating (1-10)" />
+              <button type="submit">Update</button>
+            </form>
 
-  <div class="card">
-    <h2>Add Movie</h2>
-    <form action="{{ url_for('add_movie', user_id=user.id) }}" method="post" class="row">
-      <div class="col">
-        <label for="title">Title</label><br>
-        <input id="title" name="title" placeholder="Movie title" required>
-      </div>
-      <div class="col">
-        <label for="year">Year</label><br>
-        <input id="year" name="year" placeholder="e.g. 2023">
-      </div>
-      <div class="col">
-        <label for="rating">Rating (1–10)</label><br>
-        <input id="rating" name="rating" type="number" min="1" max="10" placeholder="e.g. 8">
-      </div>
-      <div class="col">
-        <label for="poster_url">Poster URL</label><br>
-        <input id="poster_url" name="poster_url" placeholder="https://...">
-      </div>
-      <div class="col" style="align-self:end;">
-        <button class="btn" type="submit">Add Movie</button>
-      </div>
-    </form>
-  </div>
+            <form method="post" action="{{ url_for('delete_movie', user_id=user.id, movie_id=m.id) }}" onsubmit="return confirm('Delete this movie?');">
+              <button type="submit" class="danger">Delete</button>
+            </form>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="muted">No movies yet.</p>
+  {% endif %}
+</section>
+
+<hr />
+
+<section>
+  <h3>Add Movie</h3>
+  <form method="post" action="{{ url_for('add_movie', user_id=user.id) }}" class="form-inline">
+    <input type="text" name="title" placeholder="Movie title" required />
+    <input type="number" name="rating" min="1" max="10" placeholder="Rating (1-10)" />
+    <button type="submit">Add</button>
+  </form>
+  <p class="muted">Metadata will be fetched from OMDb (if OMDB_API_KEY is configured).</p>
+</section>
 {% endblock %}
